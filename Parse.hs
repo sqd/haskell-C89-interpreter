@@ -1,5 +1,6 @@
 module Parse(
-parse
+parse,
+parseFuncBody
 )where
 
 import Utils
@@ -381,3 +382,5 @@ parse' (Program funcs types vars) x
     | isFunctionDefinition x =
         let (f, rest) = spanParseFuncDef x
         in parse' (Program (f:funcs) types vars) rest
+
+parseFuncBody = parseCtlFlow . split2w

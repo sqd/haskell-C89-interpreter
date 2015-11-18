@@ -192,6 +192,8 @@ initialize p s (InitExp exp) = computeExp p s exp
 
 type Magic = State -> IO (Value, State)
 
+uselessMagic s = return (void, s)
+
 getDarkMagic :: Identifier -> Magic
 getDarkMagic = (M.!) _darkMagic
 
@@ -201,7 +203,7 @@ isDarkMagic s = (not $ isValidIdentifier s) || s `M.member` _darkMagic
 
 -- (Name, Interface, Implement)
 darkMagicBook :: [(Identifier, FunctionDefinition, Magic)]
-darkMagicBook = [("+", add, addMagic), ("-neg", neg, negMagic), ("=", assign, assignMagic), ("debuginfo", debugInfo, debugInfoMagic), ("debugprint", debugPrint, debugPrintMagic), ("&addr", addr, addrMagic), ("*deref", deref, derefMagic), ("print", print_, printMagic), ("input", input, inputMagic), ("*", multi, multiMagic), ("==", eq, eqMagic), ("<", less, lessMagic), ("!", logNeg, logNegMagic), ("&&", logAnd, logAndMagic), ("||", logOr, logOrMagic)]
+darkMagicBook = [("/", divide, divideMagic), ("+", add, addMagic), ("-neg", neg, negMagic), ("=", assign, assignMagic), ("debuginfo", debugInfo, debugInfoMagic), ("debugprint", debugPrint, debugPrintMagic), ("&addr", addr, addrMagic), ("*deref", deref, derefMagic), ("print", print_, printMagic), ("input", input, inputMagic), ("*", multi, multiMagic), ("==", eq, eqMagic), ("<", less, lessMagic), ("!", logNeg, logNegMagic), ("&&", logAnd, logAndMagic), ("||", logOr, logOrMagic), ("-=", minusAssign, uselessMagic), ("+=", plusAssign, uselessMagic), ("*=", multiAssign, uselessMagic), ("/=", divideAssign, uselessMagic)]
 
 compileDarkMagicBook = map (\(n, it, im) -> it)
 
@@ -209,6 +211,17 @@ add = FuncDef "+" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] [DarkM
 addMagic s =
     let RVal _ a = getVal s "a"; RVal _ b = getVal s "b"
     in return (RVal intType $ show (read a + read b :: Integer), s)
+
+divide = FuncDef "/" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] [DarkMagic "/"]
+divideMagic s =
+    let RVal _ a = getVal s "a"; RVal _ b = getVal s "b"
+    in return (RVal intType $ show (read a `div` read b :: Integer), s)
+-- TODO: support float
+
+plusAssign = FuncDef "+=" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] $ parseFuncBody "a=a+b;return a;"
+minusAssign = FuncDef "-=" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] $ parseFuncBody "a=a-b;return a;"
+multiAssign = FuncDef "*=" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] $ parseFuncBody "a=a*b;return a;"
+divideAssign = FuncDef "/=" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] $ parseFuncBody "a=a/b;return a;"
 
 multi = FuncDef "*" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] [DarkMagic "*"]
 multiMagic s =
