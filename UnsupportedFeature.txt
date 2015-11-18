@@ -1,0 +1,12 @@
+ANY access control
+Function Pointer (coming soon)
+Weird usage of brackets in variable declaration
+`goto`
+Assembly
+Default parameters (coming soon)
+struct (coming soon)
+struct within struct
+do while (coming soon)
+... and many more
+
+long/short/int are not distinguished
