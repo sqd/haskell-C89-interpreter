@@ -167,7 +167,6 @@ runStructure p _s (t:ts) = handler _s t where
 
             runForBlock s (ForBlock init' con delta body) = do
                 (init', newS) <- computeExp p s init'
-                print (body ++ [Expression delta])
                 runWhileBlock newS $ WhileBlock con (body ++ [Expression delta])
 
             runExpression s (Expression exp) = do
@@ -296,4 +295,4 @@ magicBook = writeMagicBook theStandardBookOfSpell
 writeMagicBook :: [(Identifier, String)] -> [FunctionDefinition]
 writeMagicBook spells = (\(name, s) -> let Program [f] _ _ = parse s in let FuncDef _ rt args ins = f in FuncDef name rt args ins) <$> spells
 
-theStandardBookOfSpell = [("-", "int f(int a,int b){return a+(-b);}"), ("!=", "int f(int a,int b){return !(a==b);}"), ("<=", "int f(int a,int b){return (a<b)||(a==b);}"), (">", "int f(int a,int b){return !(a<=b);}"), (">=", "int f(int a,int b){return (a>b)||(a==b);}")]
+theStandardBookOfSpell = [("-", "int f(int a,int b){return a+(-b);}"), ("!=", "int f(int a,int b){return !(a==b);}"), ("<=", "int f(int a,int b){return (a<b)||(a==b);}"), (">", "int f(int a,int b){return !(a<=b);}"), (">=", "int f(int a,int b){return (a>b)||(a==b);}"), (",", "int f(int a,int b){return b;}")]
