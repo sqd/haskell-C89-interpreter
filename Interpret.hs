@@ -203,7 +203,7 @@ isDarkMagic s = (not $ isValidIdentifier s) || s `M.member` _darkMagic
 
 -- (Name, Interface, Implement)
 darkMagicBook :: [(Identifier, FunctionDefinition, Magic)]
-darkMagicBook = [("/", divide, divideMagic), ("+", add, addMagic), ("-neg", neg, negMagic), ("=", assign, assignMagic), ("debuginfo", debugInfo, debugInfoMagic), ("debugprint", debugPrint, debugPrintMagic), ("&addr", addr, addrMagic), ("*deref", deref, derefMagic), ("print", print_, printMagic), ("input", input, inputMagic), ("*", multi, multiMagic), ("==", eq, eqMagic), ("<", less, lessMagic), ("!", logNeg, logNegMagic), ("&&", logAnd, logAndMagic), ("||", logOr, logOrMagic), ("-=", minusAssign, uselessMagic), ("+=", plusAssign, uselessMagic), ("*=", multiAssign, uselessMagic), ("/=", divideAssign, uselessMagic), ("--pre", prefixDec, uselessMagic), ("++pre", prefixInc, uselessMagic)]
+darkMagicBook = [("/", divide, divideMagic), ("+", add, addMagic), ("-neg", neg, negMagic), ("=", assign, assignMagic), ("debuginfo", debugInfo, debugInfoMagic), ("debugprint", debugPrint, debugPrintMagic), ("&addr", addr, addrMagic), ("*deref", deref, derefMagic), ("print", print_, printMagic), ("input", input, inputMagic), ("*", multi, multiMagic), ("==", eq, eqMagic), ("<", less, lessMagic), ("!", logNeg, logNegMagic), ("&&", logAnd, logAndMagic), ("||", logOr, logOrMagic), ("-=", minusAssign, uselessMagic), ("+=", plusAssign, uselessMagic), ("*=", multiAssign, uselessMagic), ("/=", divideAssign, uselessMagic), ("--suf", suffixDec, uselessMagic), ("++suf", suffixInc, uselessMagic), ("--pre", prefixDec, uselessMagic), ("++pre", prefixInc, uselessMagic)]
 
 compileDarkMagicBook = map (\(n, it, im) -> it)
 
@@ -225,6 +225,8 @@ divideAssign = FuncDef "/=" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b
 
 prefixInc = FuncDef "++pre" Polymorphism [(Polymorphism, "a")] $ parseFuncBody "a+=1;return a;"
 prefixDec = FuncDef "--pre" Polymorphism [(Polymorphism, "a")] $ parseFuncBody "a-=1;return a;"
+suffixInc = FuncDef "++suf" Polymorphism [(Polymorphism, "a")] $ parseFuncBody "a+=1;return a-1;"
+suffixDec = FuncDef "--suf" Polymorphism [(Polymorphism, "a")] $ parseFuncBody "a-=1;return a+1;"
 
 multi = FuncDef "*" Polymorphism [(Polymorphism, "a"), (Polymorphism, "b")] [DarkMagic "*"]
 multiMagic s =
