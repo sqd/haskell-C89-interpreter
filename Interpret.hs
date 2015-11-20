@@ -103,12 +103,14 @@ getFunc :: Program -> Identifier -> FunctionDefinition
 getFunc (Program fs _ _) n = fromJust $ find (\(FuncDef x _ _ _) -> x == n) fs
 
 computeFunc :: Program -> State -> FunctionDefinition -> [Value] -> IO (Value, State)
-computeFunc p s (FuncDef name rtType paras ins) args = snd' popScope <$> fst' rt2Value <$> runStructure p state ins where
-    state = foldl (uncurry . newVar) (pushScope s) $ zipWith (\(_, n) v -> (n, v)) paras $ lrVal args
-    lrVal =
-        if isDarkMagic name
-        then id
-        else map (toRVal s)
+computeFunc p s (FuncDef name rtType paras ins) args = do
+    let lrVal = if isDarkMagic name then id else map $ toRVal s
+    let cast = if isDarkMagic name then flip const else typeCast
+    let argVals = zipWith (\(t, n) v -> (n, cast t v)) paras $ lrVal args
+    let state = foldl (uncurry . newVar) (pushScope s) argVals
+    (v, newS) <- fst' (cast rtType . rt2Value ) <$> runStructure p state ins
+    snd' popScope <$> fst' (cast rtType . rt2Value) <$> runStructure p state ins
+    return (v, newS)
     -- Really smelly hack, but I doubt if I can bypass it without thorough modifications
 
 computeArgs :: Program -> State -> [Exp] -> IO ([Value], State)
