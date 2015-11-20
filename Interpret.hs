@@ -120,6 +120,7 @@ computeArgs p s (x:xs) = do
 -- Return Left Value if Possible
 computeExp :: Program -> State -> Exp -> IO (Value, State)
 computeExp p s (Constant x)
+    | x `elem` ["true", "false"] = return (RVal boolType x, s)
     | isValidIdentifier x = return (getVar s x, s)
     | otherwise = return (RVal Polymorphism x, s)
 

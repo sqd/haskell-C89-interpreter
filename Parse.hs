@@ -119,6 +119,7 @@ parseExp l
     | "&" `elemTopLevel` l = binaryl "&"
     | "==" `elemTopLevel` l = binaryl "=="
     | "!=" `elemTopLevel` l = binaryl "!="
+    | (not $ null l) && (head l == "!") = Exp "!" [parseExp $ tail l]
     | ">" `elemTopLevel` l = binaryl ">"
     | ">=" `elemTopLevel` l = binaryl ">="
     | "<" `elemTopLevel` l = binaryl "<"
@@ -133,7 +134,6 @@ parseExp l
     | "*" `elemTopLevel` l = binaryl "*"
     | "/" `elemTopLevel` l = binaryl "/"
     | "%" `elemTopLevel` l = binaryl "%"
-    | (not $ null l) && (head l == "!") = Exp "!" [parseExp $ tail l]
     | (not $ null l) && (head l == "~") = Exp "~" [parseExp $ tail l]
     | (not $ null l) && (head l == "++") = Exp "++pre" [parseExp $ tail l]
     | (not $ null l) && (head l == "--") = Exp "--pre" [parseExp $ tail l]
