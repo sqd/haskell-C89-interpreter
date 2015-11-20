@@ -75,7 +75,7 @@ spanString = fst' ('"':) . spanString' . tail where
 split2w :: String -> [String]
 split2w "" = []
 split2w str@(x:xs)
-    | x `elem` "?!%^&*()-=+[]{};:,<.>/~" = [x]:(split2w xs)
+    | x `elem` "|?!%^&*()-=+[]{};:,<.>/~" = [x]:(split2w xs)
     | isAlpha x || x == '_' = let (w, rest) = span (\c -> isAlphaNum c || c == '_') xs in (x:w):(split2w rest)
     | isNumber x = let (w, rest) = span isNumber str in w:(split2w rest)
     | x == '"' = let (w, rest) = spanString str in w:(split2w rest)

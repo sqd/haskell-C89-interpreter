@@ -296,4 +296,4 @@ magicBook = writeMagicBook theStandardBookOfSpell
 writeMagicBook :: [(Identifier, String)] -> [FunctionDefinition]
 writeMagicBook spells = (\(name, s) -> let Program [f] _ _ = parse s in let FuncDef _ rt args ins = f in FuncDef name rt args ins) <$> spells
 
-theStandardBookOfSpell = [("-", "int f(int a,int b){return a+(-b);}"), ("!=", "int f(int a,int b){return !(a==b);}")]
+theStandardBookOfSpell = [("-", "int f(int a,int b){return a+(-b);}"), ("!=", "int f(int a,int b){return !(a==b);}"), ("<=", "int f(int a,int b){return (a<b)||(a==b);}"), (">", "int f(int a,int b){return !(a<=b);}"), (">=", "int f(int a,int b){return (a>b)||(a==b);}")]
