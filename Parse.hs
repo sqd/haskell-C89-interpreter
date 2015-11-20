@@ -144,6 +144,7 @@ parseExp l
     | (not $ null l) && last l == "++" = Exp "++suf" [parseExp $ init l]
     | (not $ null l) && last l == "--" = Exp "--suf" [parseExp $ init l]
     | (not $ null l) && head l == "(" && last l == ")" = parseExp $ extract l
+    | otherwise = error ("Fail all patterns in `parseExp`, arg: " ++ show l)
     where
         binaryl x = let (left, right) = splitOnceL x l in Exp x [parseExp left, parseExp right]
         binaryr x = let (left, right) = splitOnceR x l in Exp x [parseExp left, parseExp right]
@@ -383,4 +384,4 @@ parse' (Program funcs types vars) x
         let (f, rest) = spanParseFuncDef x
         in parse' (Program (f:funcs) types vars) rest
 
-parseFuncBody = parseCtlFlow . split2w
+parseFuncBody = parseCtlFlow . mergeOps . split2w
