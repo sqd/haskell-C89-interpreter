@@ -108,9 +108,7 @@ computeFunc p s (FuncDef name rtType paras ins) args = do
     let cast = if isDarkMagic name then flip const else typeCast
     let argVals = zipWith (\(t, n) v -> (n, cast t v)) paras $ lrVal args
     let state = foldl (uncurry . newVar) (pushScope s) argVals
-    (v, newS) <- fst' (cast rtType . rt2Value ) <$> runStructure p state ins
     snd' popScope <$> fst' (cast rtType . rt2Value) <$> runStructure p state ins
-    return (v, newS)
     -- Really smelly hack, but I doubt if I can bypass it without thorough modifications
 
 computeArgs :: Program -> State -> [Exp] -> IO ([Value], State)
