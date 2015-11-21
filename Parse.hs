@@ -282,7 +282,9 @@ spanParseIfElse ("if":afterIf) = (IfBlock (parseExp condition) primaryBranch sec
 
 parseSwitch = undefined
 
-parseDoWhile = undefined
+parseDoWhile ("do":afterDo) = (DoWhileBlock (parseExp con) $ parseCtlFlow body, rest) where
+    (body, afterBody) = fst' extract $ spanBracket "{" "}" afterDo
+    (con, ";":rest) = spanBracket "(" ")" $ tail afterBody
 
 spanParseStruct :: [String] -> (StructDefinition, [String])
 spanParseStruct ("struct":name:x) = (StructDef name vars, rest) where

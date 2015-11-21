@@ -138,6 +138,7 @@ runStructure p _s (t:ts) = handler _s t where
     handler = case t of
         IfBlock _ _ _ -> runIfBlock
         WhileBlock _ _ -> runWhileBlock
+        DoWhileBlock _ _ -> runDoWhileBlock
         ForBlock _ _ _ _ -> runForBlock
         Expression _ -> runExpression
         Declaration _ -> runDeclaration
@@ -146,13 +147,13 @@ runStructure p _s (t:ts) = handler _s t where
         where
             runIfBlock s (IfBlock con pri alt) = do
                 (conVal, newS) <- computeExp p (pushScope s) con
-                (rt, newS) <-
+                (rt, newerS) <-
                     if isTrue $ toRVal newS conVal
                     then snd' popScope <$> runStructure p newS pri
                     else runStructure p newS alt
                 if rt `elem` [Normal, Breaked]
-                then snd' popScope <$> runStructure p newS ts
-                else return (rt, popScope newS)
+                then snd' popScope <$> runStructure p newerS ts
+                else return (rt, popScope newerS)
 
             runWhileBlock s (WhileBlock con body) = snd' popScope <$> (loop $ pushScope s) where
                 loop :: State -> IO (StructureRt, State)
@@ -166,6 +167,9 @@ runStructure p _s (t:ts) = handler _s t where
                             Breaked -> runStructure p newS ts
                             k@(Returned _) -> return (k, newS)
                     else runStructure p newS ts
+
+            runDoWhileBlock s (DoWhileBlock con body) =
+                snd' popScope <$> runStructure p (pushScope s) (body ++ [WhileBlock con body])
 
             runForBlock s (ForBlock init' con delta body) = do
                 (init', newS) <- computeExp p s init'
